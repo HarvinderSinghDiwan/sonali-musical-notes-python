@@ -1,0 +1,5 @@
+flask>=2.3.0
+numpy<2
+spleeter>=2.4.0
+basic-pitch>=0.3.0
+yt-dlp>=2024.1.0
