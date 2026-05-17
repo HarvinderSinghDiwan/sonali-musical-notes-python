@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonali Musical Notes - Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --red: #dc2626;
+            --red-dark: #991b1b;
+            --red-light: #ef4444;
+            --red-glow: rgba(220, 38, 38, 0.6);
+            --crimson: #be123c;
+            --maroon: #450a0a;
+            --gold: #f59e0b;
+            --gold-light: #fbbf24;
+            --saffron: #ea580c;
+            --cream: #fef3c7;
+            --bg-dark: #0c0404;
+            --bg-card: rgba(69, 10, 10, 0.4);
+            --border: rgba(220, 38, 38, 0.2);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Background */
+        .bg-main {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background:
+                radial-gradient(ellipse 100% 80% at 50% 120%, rgba(220, 38, 38, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 10% 20%, rgba(190, 18, 60, 0.1), transparent),
+                radial-gradient(ellipse 60% 40% at 90% 30%, rgba(234, 88, 12, 0.08), transparent),
+                linear-gradient(180deg, #1a0505 0%, #0c0404 100%);
+        }
+
+        /* Tabla/Harmonium Pattern */
+        .bg-instruments {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect x='50' y='200' width='120' height='80' rx='5' fill='%23dc2626'/%3E%3Crect x='55' y='210' width='110' height='25' rx='3' fill='%23991b1b'/%3E%3Cline x1='60' y1='215' x2='60' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='70' y1='215' x2='70' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='80' y1='215' x2='80' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='90' y1='215' x2='90' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='100' y1='215' x2='100' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='110' y1='215' x2='110' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='120' y1='215' x2='120' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='130' y1='215' x2='130' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='140' y1='215' x2='140' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='150' y1='215' x2='150' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Crect x='55' y='240' width='110' height='35' rx='2' fill='%23450a0a'/%3E%3Cellipse cx='280' cy='250' rx='45' ry='20' fill='%23991b1b'/%3E%3Cellipse cx='280' cy='245' rx='45' ry='20' fill='%23dc2626'/%3E%3Cellipse cx='280' cy='240' rx='35' ry='15' fill='%23fef3c7'/%3E%3Cellipse cx='280' cy='240' rx='15' ry='6' fill='%23450a0a'/%3E%3Cellipse cx='350' cy='260' rx='35' ry='16' fill='%23991b1b'/%3E%3Cellipse cx='350' cy='256' rx='35' ry='16' fill='%23dc2626'/%3E%3Cellipse cx='350' cy='252' rx='28' ry='12' fill='%23fef3c7'/%3E%3Cellipse cx='350' cy='252' rx='12' ry='5' fill='%23450a0a'/%3E%3C/svg%3E");
+            background-size: 600px 600px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 28px;
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.6), rgba(12, 4, 4, 0.4));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(40px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--red), var(--crimson));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--red-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 14px;
+            color: var(--cream);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: var(--red);
+            transform: translateX(-4px);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.2);
+        }
+
+        /* Player Section */
+        .player-section {
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.5), rgba(12, 4, 4, 0.6));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(40px);
+        }
+
+        audio {
+            width: 100%;
+            height: 50px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        audio::-webkit-media-controls-panel {
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.8), rgba(30, 10, 10, 0.9));
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-skip {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--cream);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-skip:hover {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: var(--red);
+            transform: scale(1.05);
+        }
+
+        .btn-play {
+            padding: 18px 44px;
+            background: linear-gradient(135deg, var(--red), var(--crimson));
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.5);
+        }
+
+        .btn-play:hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 48px rgba(220, 38, 38, 0.6);
+        }
+
+        .btn-speed {
+            padding: 12px 18px;
+            background: rgba(220, 38, 38, 0.05);
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            font-size: 13px;
+        }
+
+        .btn-speed:hover {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--cream);
+        }
+
+        .btn-speed.active {
+            background: rgba(220, 38, 38, 0.15);
+            color: var(--red-light);
+            border-color: var(--red);
+        }
+
+        .time-badge {
+            padding: 14px 28px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 14px;
+            font-family: 'JetBrains Mono', 'Outfit', monospace;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-left: 16px;
+        }
+
+        /* Current Note Display */
+        .note-display {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .note-card {
+            text-align: center;
+            padding: 50px 120px;
+            background: linear-gradient(180deg, rgba(220, 38, 38, 0.1), rgba(69, 10, 10, 0.3));
+            border: 3px solid rgba(220, 38, 38, 0.3);
+            border-radius: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .note-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: conic-gradient(from 0deg, transparent, rgba(220, 38, 38, 0.15), transparent 30%);
+            animation: sweep 5s linear infinite;
+        }
+
+        @keyframes sweep {
+            to { transform: rotate(360deg); }
+        }
+
+        .note-card.active {
+            border-color: var(--red);
+            box-shadow:
+                0 0 80px rgba(220, 38, 38, 0.4),
+                0 0 160px rgba(220, 38, 38, 0.2),
+                inset 0 0 80px rgba(220, 38, 38, 0.08);
+        }
+
+        .swara-main {
+            font-size: clamp(90px, 18vw, 160px);
+            font-weight: 900;
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(180deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 40px rgba(220, 38, 38, 0.6));
+            transition: all 0.15s ease;
+            min-width: 200px;
+        }
+
+        .swara-main.glow {
+            animation: swaraGlow 0.4s ease;
+        }
+
+        @keyframes swaraGlow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 40px rgba(220, 38, 38, 0.6)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 80px rgba(220, 38, 38, 0.9)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 40px rgba(220, 38, 38, 0.6)); }
+        }
+
+        .note-western {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Keyboard */
+        .keyboard-section {
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.5), rgba(20, 5, 5, 0.7));
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 32px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(40px);
+            overflow-x: auto;
+        }
+
+        .keyboard-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .keyboard-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        .keyboard {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            height: 250px;
+            min-width: 1150px;
+            padding: 0 20px;
+        }
+
+        .key {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 18px;
+            cursor: pointer;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .white-key {
+            width: 56px;
+            height: 230px;
+            background: linear-gradient(180deg, #fafafa 0%, #e8e8e8 60%, #d0d0d0 100%);
+            border: 1px solid #999;
+            border-radius: 0 0 12px 12px;
+            z-index: 1;
+            box-shadow:
+                0 10px 20px rgba(0, 0, 0, 0.4),
+                inset 0 -10px 15px rgba(0, 0, 0, 0.05),
+                inset 0 2px 4px rgba(255, 255, 255, 0.9);
+        }
+
+        .black-key {
+            width: 38px;
+            height: 150px;
+            background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 60%, #0a0a0a 100%);
+            margin-left: -19px;
+            margin-right: -19px;
+            z-index: 2;
+            border-radius: 0 0 8px 8px;
+            box-shadow:
+                0 10px 20px rgba(0, 0, 0, 0.6),
+                inset 0 -5px 10px rgba(0, 0, 0, 0.5),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1);
+        }
+
+        .white-key.active {
+            background: linear-gradient(180deg, #fff8e8 0%, var(--gold-light) 30%, var(--red) 100%);
+            border-color: var(--red);
+            box-shadow:
+                0 0 60px var(--red-glow),
+                0 0 120px rgba(220, 38, 38, 0.4),
+                0 10px 20px rgba(0, 0, 0, 0.4),
+                inset 0 0 30px rgba(255, 255, 255, 0.5);
+            transform: scale(1.03);
+        }
+
+        .black-key.active {
+            background: linear-gradient(180deg, #ff6b6b 0%, var(--red) 50%, var(--red-dark) 100%);
+            box-shadow:
+                0 0 50px var(--red-glow),
+                0 0 100px rgba(220, 38, 38, 0.3);
+        }
+
+        .key-label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            transition: all 0.15s ease;
+        }
+
+        .white-key .key-label { color: var(--crimson); }
+        .black-key .key-label { color: var(--gold); font-size: 11px; }
+        .white-key.active .key-label { color: var(--maroon); }
+
+        .key-octave {
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .white-key .key-octave { color: #666; }
+        .black-key .key-octave { color: #888; font-size: 9px; }
+        .white-key.active .key-octave { color: rgba(69, 10, 10, 0.7); }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.5), rgba(12, 4, 4, 0.6));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(220, 38, 38, 0.4);
+            box-shadow: 0 16px 48px rgba(220, 38, 38, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 14px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--red-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-card {
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.5), rgba(12, 4, 4, 0.6));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(20px);
+        }
+
+        .info-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .legend-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--cream);
+        }
+
+        .legend-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+        }
+
+        .swara-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .swara-chip {
+            text-align: center;
+            padding: 16px 8px;
+            background: rgba(220, 38, 38, 0.05);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .swara-chip:hover {
+            border-color: rgba(220, 38, 38, 0.5);
+            background: rgba(220, 38, 38, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .swara-chip .latin {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--red-light);
+        }
+
+        .swara-chip .hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; }
+            .header { flex-direction: column; gap: 12px; padding: 16px; }
+            .controls { gap: 8px; }
+            .btn { padding: 12px 18px; font-size: 13px; }
+            .btn-play { padding: 14px 32px; }
+            .note-card { padding: 35px 60px; }
+            .swara-main { font-size: 80px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .swara-grid { grid-template-columns: repeat(4, 1fr); }
+            .time-badge { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-main"></div>
+    <div class="bg-instruments"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🎹</div>
+                <div class="logo-text">Sonali Musical Notes</div>
+            </div>
+            <a href="/" class="back-btn">
+                <span>←</span>
+                <span>New Song</span>
+            </a>
+        </div>
+
+        <div class="player-section">
+            <audio id="audio" controls>
+                <source src="/audio/{{ job_id }}" type="audio/wav">
+            </audio>
+
+            <div class="controls">
+                <button class="btn btn-skip" onclick="skipTime(-10)">-10s</button>
+                <button class="btn btn-skip" onclick="skipTime(-5)">-5s</button>
+                <button class="btn btn-play" id="playBtn" onclick="togglePlay()">
+                    <span id="playIcon">▶</span>
+                    <span>Play</span>
+                </button>
+                <button class="btn btn-skip" onclick="skipTime(5)">+5s</button>
+                <button class="btn btn-skip" onclick="skipTime(10)">+10s</button>
+
+                <div style="width: 24px;"></div>
+
+                <button class="btn btn-speed" onclick="setSpeed(0.5)" id="speed05">0.5x</button>
+                <button class="btn btn-speed" onclick="setSpeed(0.75)" id="speed075">0.75x</button>
+                <button class="btn btn-speed active" onclick="setSpeed(1)" id="speed1">1x</button>
+                <button class="btn btn-speed" onclick="setSpeed(1.25)" id="speed125">1.25x</button>
+
+                <span class="time-badge" id="timeDisplay">0:00 / 0:00</span>
+            </div>
+        </div>
+
+        <div class="note-display">
+            <div class="note-card" id="noteCard">
+                <div class="swara-main" id="currentSwara">-</div>
+                <div class="note-western" id="currentWestern">Press Play to Start</div>
+            </div>
+        </div>
+
+        <div class="keyboard-section">
+            <div class="keyboard-header">
+                <div class="keyboard-title">Harmonium Keyboard</div>
+            </div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎵</div>
+                <div class="stat-value">{{ sa_note }}</div>
+                <div class="stat-label">Sa (Tonic)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">{{ total_notes }}</div>
+                <div class="stat-label">Total Notes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="notesPlayed">0</div>
+                <div class="stat-label">Notes Played</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="currentSpeed">1x</div>
+                <div class="stat-label">Speed</div>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-title">
+                    <span>🎨</span>
+                    <span>Legend</span>
+                </div>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: linear-gradient(135deg, var(--gold-light), var(--red));"></div>
+                        <span>Active Note</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--crimson);"></div>
+                        <span>Shuddha</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--gold);"></div>
+                        <span>Komal</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--saffron);"></div>
+                        <span>Tivra</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-title">
+                    <span>📖</span>
+                    <span>Swara Guide</span>
+                </div>
+                <div class="swara-grid">
+                    <div class="swara-chip"><div class="latin">Sa</div><div class="hindi">सा</div></div>
+                    <div class="swara-chip"><div class="latin">Re</div><div class="hindi">रे</div></div>
+                    <div class="swara-chip"><div class="latin">Ga</div><div class="hindi">ग</div></div>
+                    <div class="swara-chip"><div class="latin">Ma</div><div class="hindi">म</div></div>
+                    <div class="swara-chip"><div class="latin">Pa</div><div class="hindi">प</div></div>
+                    <div class="swara-chip"><div class="latin">Dha</div><div class="hindi">ध</div></div>
+                    <div class="swara-chip"><div class="latin">Ni</div><div class="hindi">नि</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const notesData = {{ notes | safe }};
+        const saMidi = {{ sa_midi }};
+
+        const audio = document.getElementById('audio');
+        const keyboard = document.getElementById('keyboard');
+        const currentSwaraEl = document.getElementById('currentSwara');
+        const currentWesternEl = document.getElementById('currentWestern');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const noteCard = document.getElementById('noteCard');
+
+        const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const SWARA_MAP = {
+            0: 'Sa', 1: 're', 2: 'Re', 3: 'ga', 4: 'Ga', 5: 'Ma',
+            6: "Ma'", 7: 'Pa', 8: 'dha', 9: 'Dha', 10: 'ni', 11: 'Ni'
+        };
+
+        let notesPlayed = 0;
+        let countedNotes = new Set();
+        let lastSwara = '-';
+        let isPlaying = false;
+
+        function buildKeyboard() {
+            const keys = [];
+            for (let octave = -1; octave <= 1; octave++) {
+                for (let i = 0; i < 12; i++) {
+                    const midi = saMidi + (octave * 12) + i;
+                    const swara = SWARA_MAP[i];
+                    const isBlack = [1, 3, 6, 8, 10].includes(i);
+                    const noteName = NOTE_NAMES[midi % 12] + Math.floor(midi / 12 - 1);
+
+                    let octaveLabel = octave < 0 ? 'मंद्र' : octave > 0 ? 'तार' : 'मध्य';
+                    let displaySwara = swara + (octave > 0 ? "'" : octave < 0 ? "." : "");
+
+                    keys.push({ midi, swara: displaySwara, isBlack, noteName, octaveLabel });
+                }
+            }
+
+            keyboard.innerHTML = '';
+            keys.forEach(key => {
+                const keyEl = document.createElement('div');
+                keyEl.className = `key ${key.isBlack ? 'black-key' : 'white-key'}`;
+                keyEl.dataset.midi = key.midi;
+
+                const label = document.createElement('div');
+                label.className = 'key-label';
+                label.textContent = key.swara;
+                keyEl.appendChild(label);
+
+                if (!key.isBlack) {
+                    const octave = document.createElement('div');
+                    octave.className = 'key-octave';
+                    octave.textContent = key.octaveLabel;
+                    keyEl.appendChild(octave);
+                }
+
+                keyboard.appendChild(keyEl);
+            });
+        }
+
+        function midiToSwara(midi) {
+            const semitones = ((midi - saMidi) % 12 + 12) % 12;
+            const octaveDiff = Math.floor((midi - saMidi) / 12);
+            let swara = SWARA_MAP[semitones];
+            if (octaveDiff > 0) swara += "'".repeat(octaveDiff);
+            if (octaveDiff < 0) swara += ".".repeat(Math.abs(octaveDiff));
+            return swara;
+        }
+
+        function midiToNoteName(midi) {
+            return NOTE_NAMES[midi % 12] + (Math.floor(midi / 12) - 1);
+        }
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+
+        function skipTime(sec) {
+            audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + sec));
+        }
+
+        function setSpeed(rate) {
+            audio.playbackRate = rate;
+            document.getElementById('currentSpeed').textContent = rate + 'x';
+            document.querySelectorAll('.btn-speed').forEach(btn => btn.classList.remove('active'));
+            const btnId = 'speed' + String(rate).replace('.', '');
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.add('active');
+        }
+
+        function updateVisualization() {
+            const currentTime = audio.currentTime;
+
+            if (audio.duration) {
+                timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(audio.duration)}`;
+            }
+
+            const activeNotes = new Set();
+            let currentSwara = '-';
+            let currentNote = '';
+
+            notesData.forEach((note, idx) => {
+                if (currentTime >= note.start && currentTime <= note.end) {
+                    activeNotes.add(note.midi);
+                    currentSwara = midiToSwara(note.midi);
+                    currentNote = midiToNoteName(note.midi);
+
+                    if (!countedNotes.has(idx)) {
+                        countedNotes.add(idx);
+                        notesPlayed++;
+                        document.getElementById('notesPlayed').textContent = notesPlayed;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.key').forEach(key => {
+                const midi = parseInt(key.dataset.midi);
+                key.classList.toggle('active', activeNotes.has(midi));
+            });
+
+            noteCard.classList.toggle('active', activeNotes.size > 0);
+
+            if (currentSwara !== lastSwara && currentSwara !== '-') {
+                currentSwaraEl.classList.remove('glow');
+                void currentSwaraEl.offsetWidth;
+                currentSwaraEl.classList.add('glow');
+                lastSwara = currentSwara;
+            }
+
+            currentSwaraEl.textContent = currentSwara;
+            currentWesternEl.textContent = currentNote ? `(${currentNote})` : (isPlaying ? 'Listening...' : 'Press Play to Start');
+
+            requestAnimationFrame(updateVisualization);
+        }
+
+        audio.addEventListener('play', () => {
+            isPlaying = true;
+            playIcon.textContent = '⏸';
+            playBtn.querySelector('span:last-child').textContent = 'Pause';
+        });
+
+        audio.addEventListener('pause', () => {
+            isPlaying = false;
+            playIcon.textContent = '▶';
+            playBtn.querySelector('span:last-child').textContent = 'Play';
+        });
+
+        audio.addEventListener('ended', () => {
+            isPlaying = false;
+            playIcon.textContent = '▶';
+            playBtn.querySelector('span:last-child').textContent = 'Play';
+        });
+
+        audio.addEventListener('seeked', () => {
+            countedNotes.clear();
+            notesPlayed = 0;
+            document.getElementById('notesPlayed').textContent = 0;
+        });
+
+        buildKeyboard();
+        requestAnimationFrame(updateVisualization);
+    </script>
+</body>
+</html>

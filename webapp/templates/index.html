@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonali Musical Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --red: #dc2626;
+            --red-dark: #991b1b;
+            --red-light: #ef4444;
+            --crimson: #be123c;
+            --maroon: #450a0a;
+            --gold: #f59e0b;
+            --gold-light: #fbbf24;
+            --saffron: #ea580c;
+            --cream: #fef3c7;
+            --bg-dark: #0c0404;
+            --bg-card: rgba(69, 10, 10, 0.4);
+            --border: rgba(220, 38, 38, 0.2);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Rich Red Gradient Background */
+        .bg-main {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 0%, rgba(220, 38, 38, 0.3), transparent),
+                radial-gradient(ellipse 60% 50% at 0% 50%, rgba(190, 18, 60, 0.25), transparent),
+                radial-gradient(ellipse 60% 50% at 100% 50%, rgba(234, 88, 12, 0.2), transparent),
+                radial-gradient(ellipse 80% 60% at 50% 100%, rgba(69, 10, 10, 0.8), transparent),
+                linear-gradient(180deg, #1a0505 0%, #0c0404 50%, #0a0202 100%);
+        }
+
+        /* Tabla and Harmonium Background Pattern */
+        .bg-instruments {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3C!-- Harmonium --%3E%3Crect x='50' y='200' width='120' height='80' rx='5' fill='%23dc2626'/%3E%3Crect x='55' y='210' width='110' height='25' rx='3' fill='%23991b1b'/%3E%3Cline x1='60' y1='215' x2='60' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='70' y1='215' x2='70' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='80' y1='215' x2='80' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='90' y1='215' x2='90' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='100' y1='215' x2='100' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='110' y1='215' x2='110' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='120' y1='215' x2='120' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='130' y1='215' x2='130' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='140' y1='215' x2='140' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Cline x1='150' y1='215' x2='150' y2='230' stroke='%23fef3c7' stroke-width='2'/%3E%3Crect x='55' y='240' width='110' height='35' rx='2' fill='%23450a0a'/%3E%3C!-- Tabla --%3E%3Cellipse cx='280' cy='250' rx='45' ry='20' fill='%23991b1b'/%3E%3Cellipse cx='280' cy='245' rx='45' ry='20' fill='%23dc2626'/%3E%3Cellipse cx='280' cy='240' rx='35' ry='15' fill='%23fef3c7'/%3E%3Cellipse cx='280' cy='240' rx='15' ry='6' fill='%23450a0a'/%3E%3Cellipse cx='350' cy='260' rx='35' ry='16' fill='%23991b1b'/%3E%3Cellipse cx='350' cy='256' rx='35' ry='16' fill='%23dc2626'/%3E%3Cellipse cx='350' cy='252' rx='28' ry='12' fill='%23fef3c7'/%3E%3Cellipse cx='350' cy='252' rx='12' ry='5' fill='%23450a0a'/%3E%3C/svg%3E");
+            background-size: 500px 500px;
+            background-position: center;
+            animation: floatBg 30s ease-in-out infinite;
+        }
+
+        @keyframes floatBg {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.02); }
+        }
+
+        /* Decorative Mandala Pattern */
+        .bg-mandala {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' fill='none' stroke='%23dc2626' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='70' fill='none' stroke='%23dc2626' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23dc2626' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='30' fill='none' stroke='%23dc2626' stroke-width='0.5'/%3E%3Cpath d='M100 10 L100 190 M10 100 L190 100 M29 29 L171 171 M171 29 L29 171' stroke='%23dc2626' stroke-width='0.3'/%3E%3C/svg%3E");
+            background-size: contain;
+            animation: rotateMandala 120s linear infinite;
+        }
+
+        @keyframes rotateMandala {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { opacity: 0; transform: translateY(-100px) scale(1); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(234, 88, 12, 0.15));
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            border-radius: 100px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.2);
+        }
+
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--red) 0%, var(--crimson) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.5);
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 8px 32px rgba(220, 38, 38, 0.5); }
+            50% { box-shadow: 0 8px 48px rgba(220, 38, 38, 0.8); }
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--red-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 {
+            font-size: clamp(42px, 8vw, 72px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, var(--cream) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 60px rgba(220, 38, 38, 0.3);
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .tagline-hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 18px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Main Card */
+        .main-card {
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.6), rgba(12, 4, 4, 0.8));
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 32px;
+            padding: 48px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(40px);
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 80px rgba(220, 38, 38, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--red), var(--gold), var(--red), transparent);
+        }
+
+        /* Upload Box */
+        .upload-box {
+            border: 2px dashed rgba(220, 38, 38, 0.4);
+            border-radius: 24px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: rgba(220, 38, 38, 0.03);
+        }
+
+        .upload-box:hover, .upload-box.dragover {
+            border-color: var(--red);
+            background: rgba(220, 38, 38, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2);
+        }
+
+        .upload-visual {
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .upload-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(234, 88, 12, 0.15));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 54px;
+            border: 3px solid rgba(220, 38, 38, 0.4);
+            transition: all 0.4s ease;
+        }
+
+        .upload-box:hover .upload-circle {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--red);
+            box-shadow: 0 0 60px rgba(220, 38, 38, 0.4);
+        }
+
+        .upload-rings {
+            position: absolute;
+            inset: -15px;
+            border: 2px solid var(--red);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .upload-box:hover .upload-rings {
+            animation: ringPulse 1.5s ease-out infinite;
+        }
+
+        @keyframes ringPulse {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        .upload-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--cream);
+        }
+
+        .upload-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .format-pills {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .format-pill {
+            padding: 10px 20px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--red-light);
+            transition: all 0.3s ease;
+        }
+
+        .format-pill:hover {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: var(--red);
+            transform: scale(1.05);
+        }
+
+        input[type="file"] { display: none; }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.4), transparent);
+        }
+
+        .divider-text {
+            padding: 0 24px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Scale Section */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--red), var(--saffron));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cream);
+        }
+
+        .scale-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .scale-btn {
+            padding: 18px 8px;
+            background: rgba(220, 38, 38, 0.05);
+            border: 2px solid rgba(220, 38, 38, 0.2);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .scale-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: rgba(220, 38, 38, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .scale-btn.selected {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.25), rgba(234, 88, 12, 0.2));
+            border-color: var(--red);
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.3), inset 0 0 20px rgba(220, 38, 38, 0.1);
+        }
+
+        .scale-btn .note {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .scale-btn.selected .note {
+            background: linear-gradient(135deg, var(--red-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .scale-btn .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        /* YouTube Section */
+        .url-input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 18px 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(220, 38, 38, 0.2);
+            border-radius: 16px;
+            color: var(--text);
+            font-size: 15px;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--red);
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15);
+        }
+
+        .btn-process {
+            padding: 18px 40px;
+            background: linear-gradient(135deg, var(--red), var(--crimson));
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-process:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 48px rgba(220, 38, 38, 0.5);
+        }
+
+        .beta-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-left: auto;
+        }
+
+        .warning-box {
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 14px;
+            font-size: 13px;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .feature {
+            padding: 32px 20px;
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.5), rgba(12, 4, 4, 0.6));
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 24px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+        }
+
+        .feature:hover {
+            transform: translateY(-8px);
+            border-color: rgba(220, 38, 38, 0.5);
+            box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 18px;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(234, 88, 12, 0.15));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover .feature-icon {
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 10px 40px rgba(220, 38, 38, 0.3);
+            border-color: var(--red);
+        }
+
+        .feature-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--cream);
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .footer-heart {
+            color: var(--red);
+            font-size: 18px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(12, 4, 4, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-card {
+            background: linear-gradient(180deg, rgba(69, 10, 10, 0.95), rgba(12, 4, 4, 0.98));
+            border: 2px solid rgba(220, 38, 38, 0.4);
+            border-radius: 32px;
+            padding: 60px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 0 100px rgba(220, 38, 38, 0.3);
+        }
+
+        .loader-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .loader-ring {
+            position: absolute;
+            inset: 0;
+            border: 3px solid transparent;
+            border-top-color: var(--red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-ring:nth-child(2) {
+            inset: 12px;
+            border-top-color: var(--saffron);
+            animation-duration: 1.5s;
+            animation-direction: reverse;
+        }
+
+        .loader-ring:nth-child(3) {
+            inset: 24px;
+            border-top-color: var(--gold);
+            animation-duration: 2s;
+        }
+
+        .loader-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        .modal-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--cream);
+        }
+
+        .modal-step {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .progress-track {
+            height: 10px;
+            background: rgba(220, 38, 38, 0.2);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--red), var(--saffron), var(--gold));
+            background-size: 200% 100%;
+            animation: gradientMove 2s linear infinite;
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 100px;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        .error-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 16px;
+            display: none;
+        }
+
+        .error-box.show { display: block; }
+
+        .error-text {
+            color: #fca5a5;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 24px 16px; }
+            .main-card { padding: 32px 24px; }
+            .features { grid-template-columns: 1fr; }
+            .url-input-group { flex-direction: column; }
+            .btn-process { width: 100%; }
+            .scale-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-main"></div>
+    <div class="bg-instruments"></div>
+    <div class="bg-mandala"></div>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-badge">
+                <div class="logo-icon">🎹</div>
+                <div class="logo-text">Sonali</div>
+            </div>
+            <h1>Musical Notes</h1>
+            <p class="tagline">Transform any song into harmonium notation</p>
+            <p class="tagline-hindi">संगीत को स्वरलिपि में बदलें</p>
+        </div>
+
+        <div class="main-card">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-visual">
+                    <div class="upload-circle">🎵</div>
+                    <div class="upload-rings"></div>
+                </div>
+                <div class="upload-title">Drop your music here</div>
+                <div class="upload-subtitle">or click to browse from your device</div>
+                <div class="format-pills">
+                    <span class="format-pill">MP3</span>
+                    <span class="format-pill">MP4</span>
+                    <span class="format-pill">WAV</span>
+                    <span class="format-pill">M4A</span>
+                    <span class="format-pill">FLAC</span>
+                </div>
+                <input type="file" id="fileInput" accept="audio/*,video/*">
+            </div>
+
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">Select Scale</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="section-header">
+                <div class="section-icon">🎯</div>
+                <div class="section-title">Choose Sa (Tonic)</div>
+            </div>
+
+            <div class="scale-grid">
+                <div class="scale-btn selected" data-scale="auto">
+                    <div class="note">Auto</div>
+                    <div class="label">Detect</div>
+                </div>
+                <div class="scale-btn" data-scale="C"><div class="note">C</div><div class="label">सा = C</div></div>
+                <div class="scale-btn" data-scale="C#"><div class="note">C#</div><div class="label">सा = C#</div></div>
+                <div class="scale-btn" data-scale="D"><div class="note">D</div><div class="label">सा = D</div></div>
+                <div class="scale-btn" data-scale="D#"><div class="note">D#</div><div class="label">सा = D#</div></div>
+                <div class="scale-btn" data-scale="E"><div class="note">E</div><div class="label">सा = E</div></div>
+                <div class="scale-btn" data-scale="F"><div class="note">F</div><div class="label">सा = F</div></div>
+                <div class="scale-btn" data-scale="F#"><div class="note">F#</div><div class="label">सा = F#</div></div>
+                <div class="scale-btn" data-scale="G"><div class="note">G</div><div class="label">सा = G</div></div>
+                <div class="scale-btn" data-scale="G#"><div class="note">G#</div><div class="label">सा = G#</div></div>
+                <div class="scale-btn" data-scale="A"><div class="note">A</div><div class="label">सा = A</div></div>
+                <div class="scale-btn" data-scale="A#"><div class="note">A#</div><div class="label">सा = A#</div></div>
+                <div class="scale-btn" data-scale="B"><div class="note">B</div><div class="label">सा = B</div></div>
+            </div>
+
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">Or paste link</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="section-header">
+                <div class="section-icon">🔗</div>
+                <div class="section-title">YouTube URL</div>
+                <span class="beta-badge">May not work</span>
+            </div>
+
+            <div class="url-input-group">
+                <input type="text" class="url-input" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                <button class="btn-process" id="youtubeBtn">Process</button>
+            </div>
+
+            <div class="warning-box">
+                <span>⚠️</span>
+                <span>YouTube often blocks automated downloads. If it fails, download the song manually and upload above.</span>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎤</div>
+                <div class="feature-title">AI Vocal Isolation</div>
+                <div class="feature-desc">Separates vocals from instruments</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Smart Detection</div>
+                <div class="feature-desc">Accurate note recognition</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✨</div>
+                <div class="feature-title">Live Visualization</div>
+                <div class="feature-desc">Watch keys light up in sync</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Made with <span class="footer-heart">♥</span> for Indian Classical Music Lovers
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-card">
+            <div class="loader-container">
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-icon">🎵</div>
+            </div>
+            <div class="modal-title" id="statusText">Processing...</div>
+            <div class="modal-step" id="statusStep">Initializing...</div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div class="error-box" id="errorBox">
+                <div class="error-text" id="errorText"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        const uploadBox = document.getElementById('uploadBox');
+        const fileInput = document.getElementById('fileInput');
+        const youtubeUrl = document.getElementById('youtubeUrl');
+        const youtubeBtn = document.getElementById('youtubeBtn');
+        const modal = document.getElementById('modal');
+        const statusText = document.getElementById('statusText');
+        const statusStep = document.getElementById('statusStep');
+        const progressBar = document.getElementById('progressBar');
+        const errorBox = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+
+        let selectedScale = 'auto';
+
+        document.querySelectorAll('.scale-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedScale = btn.dataset.scale;
+            });
+        });
+
+        uploadBox.addEventListener('click', () => fileInput.click());
+        uploadBox.addEventListener('dragover', (e) => { e.preventDefault(); uploadBox.classList.add('dragover'); });
+        uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) handleFile(fileInput.files[0]);
+        });
+
+        youtubeBtn.addEventListener('click', () => {
+            const url = youtubeUrl.value.trim();
+            if (url) processYouTube(url);
+        });
+
+        youtubeUrl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const url = youtubeUrl.value.trim();
+                if (url) processYouTube(url);
+            }
+        });
+
+        function handleFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('scale', selectedScale);
+            showModal('Uploading ' + file.name);
+            fetch('/upload', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => { if (data.error) showError(data.error); else pollStatus(data.job_id); })
+                .catch(err => showError(err.message));
+        }
+
+        function processYouTube(url) {
+            const formData = new FormData();
+            formData.append('youtube_url', url);
+            formData.append('scale', selectedScale);
+            showModal('Connecting to YouTube...');
+            fetch('/upload', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => { if (data.error) showError(data.error); else pollStatus(data.job_id); })
+                .catch(err => showError(err.message));
+        }
+
+        function showModal(text) {
+            modal.classList.add('active');
+            statusText.textContent = text || 'Processing...';
+            statusStep.textContent = 'Initializing...';
+            progressBar.style.width = '0%';
+            errorBox.classList.remove('show');
+        }
+
+        function showError(message) {
+            statusText.textContent = 'Something went wrong';
+            statusStep.textContent = '';
+            errorText.textContent = message;
+            errorBox.classList.add('show');
+        }
+
+        function pollStatus(jobId) {
+            fetch(`/status/${jobId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'processing') {
+                        statusText.textContent = 'Processing your music...';
+                        statusStep.textContent = data.step || '';
+                        progressBar.style.width = (data.progress || 0) + '%';
+                        setTimeout(() => pollStatus(jobId), 1000);
+                    } else if (data.status === 'complete') {
+                        statusText.textContent = 'Ready!';
+                        statusStep.textContent = 'Redirecting to player...';
+                        progressBar.style.width = '100%';
+                        setTimeout(() => { window.location.href = `/player/${jobId}`; }, 800);
+                    } else if (data.status === 'error') {
+                        showError(data.error);
+                    } else {
+                        setTimeout(() => pollStatus(jobId), 1000);
+                    }
+                })
+                .catch(() => setTimeout(() => pollStatus(jobId), 2000));
+        }
+    </script>
+</body>
+</html>
